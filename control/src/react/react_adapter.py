@@ -7,7 +7,9 @@ from tornado.ioloop import PeriodicCallback
 import logging
 
 from react.DoorSensor import monitorDoorSensor, hardwareCheck
+from react.OccupancySensor import firmwareVersion, generalRead, setNormalMode, setReportMode
 import threading
+import serial
 
 class ReactAdapter(ApiAdapter):
 
@@ -18,15 +20,51 @@ class ReactAdapter(ApiAdapter):
             logging.ERROR("Not found.")
             return
 
+        self.serial_port = serial.Serial(
+            port='/dev/ttyS1',
+            baudrate=115200,
+            stopbits=serial.STOPBITS_ONE,
+            timeout=1
+        )
 
         self.currentState = [True]
         self.trueIsOpen = True
+        self.mmWaveVersion = ""
+        self.mmWaveMode = ["normal"]
+        setNormalMode(self.serial_port)
+        self.mmWaveData = {}
         self.param_tree = ParameterTree({
             "currentState" : (lambda: self.currentState[0], None),
-            "trueIsOpen" : (lambda: self.trueIsOpen, self.setTrueIsOpen)
+            "trueIsOpen" : (lambda: self.trueIsOpen, self.setTrueIsOpen),
+            "mmWaveVersion": (lambda: self.mmWaveVersion, None),
+            "mmWaveMode" : (lambda: self.mmWaveMode[0], self.setmmWaveMode),
+            "mmWaveData": (lambda: self.mmWaveData, None)
         })
+
+        self.mmWaveVersion = firmwareVersion(self.serial_port)
+
         x = threading.Thread(target=monitorDoorSensor, args=(self.currentState,))
         x.start()
+        x = threading.Thread(target=self.threadedMonitormmWaveSensor, args=(self.serial_port, self.mmWaveMode,self.mmWaveData))
+        x.start()
+
+    def threadedMonitormmWaveSensor(self, serial_port, mmWaveMode, mmWaveData):
+        while True:
+            try:
+                #logging.debug("started loop")
+                generalRead(serial_port, mmWaveMode, mmWaveData)
+            except Exception as e:
+                logging.error(e)
+
+
+    def setmmWaveMode(self, newValue):
+        self.mmWaveMode[0] = newValue
+        # call the function to change it to the correct mode
+        if newValue == "normal":
+            setNormalMode(self.serial_port)
+        elif newValue == "report":
+            setReportMode(self.serial_port)
+
 
     def setTrueIsOpen(self, newValue):
         self.trueIsOpen = newValue
