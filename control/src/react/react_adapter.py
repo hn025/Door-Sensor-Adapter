@@ -11,6 +11,7 @@ from react.OccupancySensor import firmwareVersion, generalRead, setNormalMode, s
 import threading
 import serial
 
+
 class ReactAdapter(ApiAdapter):
 
     def __init__(self, **kwargs):
@@ -53,11 +54,9 @@ class ReactAdapter(ApiAdapter):
     def threadedMonitormmWaveSensor(self, serial_port, mmWaveMode, mmWaveData):
         while True:
             try:
-                #logging.debug("started loop")
                 generalRead(serial_port, mmWaveMode, mmWaveData)
             except Exception as e:
                 logging.error(e)
-
 
     def setmmWaveMode(self, newValue):
         self.mmWaveMode[0] = newValue
@@ -66,11 +65,9 @@ class ReactAdapter(ApiAdapter):
         elif newValue == "report":
             setReportMode(self.serial_port)
 
-
     def setTrueIsOpen(self, newValue):
         self.trueIsOpen = newValue
 
-    
 
     @response_types('application/json', "image/*", default='application/json')
     def get(self, path, request):
