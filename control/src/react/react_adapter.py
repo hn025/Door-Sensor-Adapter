@@ -33,19 +33,21 @@ class ReactAdapter(ApiAdapter):
         self.mmWaveMode = ["normal"]
         setNormalMode(self.serial_port)
         self.mmWaveData = {}
+        self.time = {}
         self.param_tree = ParameterTree({
-            "currentState" : (lambda: self.currentState[0], None),
-            "trueIsOpen" : (lambda: self.trueIsOpen, self.setTrueIsOpen),
+            "currentState": (lambda: self.currentState[0], None),
+            "trueIsOpen": (lambda: self.trueIsOpen, self.setTrueIsOpen),
             "mmWaveVersion": (lambda: self.mmWaveVersion, None),
-            "mmWaveMode" : (lambda: self.mmWaveMode[0], self.setmmWaveMode),
-            "mmWaveData": (lambda: self.mmWaveData, None)
+            "mmWaveMode": (lambda: self.mmWaveMode[0], self.setmmWaveMode),
+            "mmWaveData": (lambda: self.mmWaveData, None),
+            "time": (lambda: self.time, None)
         })
 
         self.mmWaveVersion = firmwareVersion(self.serial_port)
 
-        x = threading.Thread(target=monitorDoorSensor, args=(self.currentState,))
+        x = threading.Thread(target=monitorDoorSensor, args=(self.currentState, self.time))
         x.start()
-        x = threading.Thread(target=self.threadedMonitormmWaveSensor, args=(self.serial_port, self.mmWaveMode,self.mmWaveData))
+        x = threading.Thread(target=self.threadedMonitormmWaveSensor, args=(self.serial_port, self.mmWaveMode, self.mmWaveData))
         x.start()
 
     def threadedMonitormmWaveSensor(self, serial_port, mmWaveMode, mmWaveData):
@@ -59,7 +61,6 @@ class ReactAdapter(ApiAdapter):
 
     def setmmWaveMode(self, newValue):
         self.mmWaveMode[0] = newValue
-        # call the function to change it to the correct mode
         if newValue == "normal":
             setNormalMode(self.serial_port)
         elif newValue == "report":

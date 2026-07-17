@@ -8,7 +8,6 @@ import logging
 def firmwareVersion(serial_port):
     hex_to_send = "FDFCFBFA0200000004030201"
     serial_port.write(binascii.unhexlify(hex_to_send))
-    #while (True):
 
     serial_port.readline()
 
@@ -66,7 +65,6 @@ def debugMode(serial_port):
     hex_to_send = "FDFCFBFA0800120000000000000004030201"
     serial_port.write(binascii.unhexlify(hex_to_send))
     data = serial_port.readline()
-    #print(data)
     while True:
         x = serial_port.readline()
         print(x)
@@ -82,17 +80,14 @@ def readReportMode(serial_port, readData):
 
     x = serial_port.read_until(b"\xf8\xf7\xf6\xf5")
     if x.hex()[12:14] == "01":
-        #print("Person present.")
         readData["presence"] = True
     elif x.hex()[12:14] == "00":
-        #print("Person absent.")
         readData["presence"] = False
     else:
         #print("Error.")
         logging.error("Error reading report data")
         
     distance = int(x.hex()[16:18] + x.hex()[14:16], 16)
-    #print(distance, "cm\n")
     readData["distance"] = distance
 
 
@@ -108,9 +103,3 @@ def generalRead(serial_port, currentMode, readData):
 
 def terminate(serial_port):
     serial_port.close()
-
-
-
-
-
-
