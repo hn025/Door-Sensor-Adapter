@@ -94,7 +94,7 @@ function DoorSensorPage() {
     }
 
     function alertFunction() {
-        if ((currentTime.getTime() - convertStringToDate(latestTime).getTime() >= 5000) && door === "Door is open.") {  // 1800000
+        if ((currentTime.getTime() - convertStringToDate(latestTime).getTime() >= 1800000) && door === "Door is open.") {
             if (alertState === false) {
                 toast.warn("  Door has been open for more than   30 minutes.", {
                     position: "top-center",
