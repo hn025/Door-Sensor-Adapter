@@ -22,8 +22,6 @@ function OccupancySensorPage() {
     var mode = ""
     var modeList = ["normal", "report"]
 
-    console.log(periodicEndpoint.data)
-
     function changeMode(event){
         periodicEndpoint.put({["mmWaveMode"]:event}, "mmWaveMode")
         .then(response => {
@@ -40,18 +38,18 @@ function OccupancySensorPage() {
         mode = "Report mode"
 
         return (
-        <div style={{"margin":"10px"}}>
-            <p>Version: {version}</p>
-            <p>Range: {range}</p>
-            <p>Status: {status}</p>
-            <EndpointDropdown endpoint={periodicEndpoint} event_type="select" fullpath="mmWaveMode" title={periodicEndpoint.data?.mmWaveMode || "Unknown"}>
-                {modeList.map(
-                    (value, index) => (
-                        <Dropdown.Item eventKey={value} key={index}>{value}</Dropdown.Item>
-                    ))
-                }
-            </EndpointDropdown>
-        </div>
+            <div style={{"margin":"10px"}}>
+                <p>Version: {version}</p>
+                <p>Range: {range}</p>
+                <p>Status: {status}</p>
+                <EndpointDropdown endpoint={periodicEndpoint} event_type="select" fullpath="mmWaveMode" title={periodicEndpoint.data?.mmWaveMode || "Unknown"}>
+                    {modeList.map(
+                        (value, index) => (
+                            <Dropdown.Item eventKey={value} key={index}>{value}</Dropdown.Item>
+                        ))
+                    }
+                </EndpointDropdown>
+            </div>
         )
 
     } else if (periodicEndpoint.data?.mmWaveMode === "report") {
@@ -63,23 +61,20 @@ function OccupancySensorPage() {
         else presence = "No";
 
         return (
-        <div style={{"margin":"10px"}}>
-            <p>Version: {version}</p>
-            <p>Presence: {presence}</p>
-            <p>Distance: {distance}cm</p>
-            <EndpointDropdown endpoint={periodicEndpoint} event_type="select" fullpath="mmWaveMode" title={periodicEndpoint.data?.mmWaveMode || "Unknown"}>
-                {modeList.map(
-                    (value, index) => (
-                        <Dropdown.Item eventKey={value} key={index}>{value}</Dropdown.Item>
-                    ))
-                }
-            </EndpointDropdown>
-        </div>
+            <div style={{"margin":"10px"}}>
+                <p>Version: {version}</p>
+                <p>Presence: {presence}</p>
+                <p>Distance: {distance}cm</p>
+                <EndpointDropdown endpoint={periodicEndpoint} event_type="select" fullpath="mmWaveMode" title={periodicEndpoint.data?.mmWaveMode || "Unknown"}>
+                    {modeList.map(
+                        (value, index) => (
+                            <Dropdown.Item eventKey={value} key={index}>{value}</Dropdown.Item>
+                        )
+                    )}
+                </EndpointDropdown>
+            </div>
         )
-
     }
-    
-    
 }
 
 export default OccupancySensorPage;

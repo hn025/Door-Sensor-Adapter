@@ -38,6 +38,3 @@ def monitorDoorSensor(currentState, time):
                                     currentTime = str(datetime.now())
                                     time[currentTime] = currentState[0]
                                     timer = t.perf_counter_ns() // 1000000
-
-                                     
-                                
